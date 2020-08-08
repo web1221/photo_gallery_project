@@ -20,7 +20,7 @@ import { usePhotoGallery } from "../hooks/usePhotoGallery";
 import "./Tab2.css";
 
 const Tab2: React.FC = () => {
-  const { takePhoto } = usePhotoGallery();
+  const { takePhoto, photos } = usePhotoGallery();
 
   return (
     <IonPage>
@@ -36,6 +36,17 @@ const Tab2: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <ExploreContainer name="Something Else" />
+      </IonContent>
+      <IonContent>
+        <IonGrid>
+          <IonRow>
+            {photos.map((photo, index) => (
+              <IonCol size="6" key={index}>
+                <IonImg src={photo.webviewPath} />
+              </IonCol>
+            ))}
+          </IonRow>
+        </IonGrid>
       </IonContent>
       <IonContent>
         <IonFab vertical="bottom" horizontal="center" slot="fixed">
