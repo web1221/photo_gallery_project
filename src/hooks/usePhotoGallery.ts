@@ -13,6 +13,7 @@ import {
 
 export function usePhotoGallery() {
   const { getPhoto } = useCamera();
+  const { deleteFile, getUri, readFile, writeFile } = useFilesystem();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const takePhoto = async () => {
     const cameraPhoto = await getPhoto({
@@ -21,14 +22,24 @@ export function usePhotoGallery() {
       quality: 100,
     });
     const fileName = new Date().getTime() + `.jpeg`;
-    const newPhotos = [
-      {
-        filepath: fileName,
-        webviewPath: cameraPhoto.webPath,
-      },
-      ...photos,
-    ];
+    const savedFileImage = await savePicture(cameraPhoto, fileName);
+    const newPhotos = [savedFileImage, ...photos];
     setPhotos(newPhotos);
+  };
+  const savePicture = async (
+    photo: CameraPhoto,
+    fileName: string
+  ): Promise<Photo> => {
+    const base64Data = await base64FromPath(photo.webPath!);
+    const savedFile = await writeFile({
+      path: fileName,
+      data: base64Data,
+      directory: FilesystemDirectory.Data,
+    });
+    return {
+      filepath: fileName,
+      webviewPath: photo.webPath,
+    };
   };
   return { takePhoto, photos };
 }
